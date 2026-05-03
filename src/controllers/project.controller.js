@@ -1,4 +1,5 @@
 import { Project } from "../models/project.model.js";
+import { generateReview } from "../services/ai.service.js";
 
 export const createProject = async (req, res) => {
   try {
@@ -13,7 +14,12 @@ export const createProject = async (req, res) => {
 
     const { id } = req.user;
 
-    const newProject = await Project.create({ user: id, code });
+    const codeReview = await generateReview(code);
+    const newProject = await Project.create({
+      user: id,
+      code,
+      review: codeReview,
+    });
     res.status(201).json({
       success: true,
       data: newProject,
