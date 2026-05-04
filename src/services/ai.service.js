@@ -17,14 +17,26 @@ export const generateReview = async (code) => {
         },
         {
           role: "user",
-          content: `Review the following code and respond in this format:
+          content: `Be concise, practical, and avoid generic advice.
 
-- Issues:
-- Improvements:
-- Suggestions:
+Rules:
 
-Code:
-${code}`,
+Focus on real issues only (no fluff)
+Prioritize critical bugs first
+Keep output short and structured
+Do not explain obvious things
+
+Output format:
+
+{
+  "critical": [],
+  "improvements": [],
+  "suggestions": []
+}
+
+If no major issues, say: "No critical issues found."
+
+Code:${code}`,
         },
       ],
       max_tokens: 1024,

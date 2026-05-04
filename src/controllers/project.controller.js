@@ -29,7 +29,7 @@ export const createProject = async (req, res) => {
     console.error(error);
     res.status(500).json({
       success: false,
-      message: "Server error. Please try later",
+      message: "Failed to create project. Please try later",
     });
   }
 };
