@@ -11,7 +11,7 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "https://ai-code-reviewer-frontend-xi.vercel.app",
   }),
 );
 app.use(authRouter);
