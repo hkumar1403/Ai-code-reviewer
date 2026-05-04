@@ -29,7 +29,7 @@ REST API for the AI Code Reviewer app. Handles authentication, stores projects, 
 
 - Node.js 18+
 - A MongoDB database (local or [MongoDB Atlas](https://www.mongodb.com/atlas))
-- An [Groq API key](https://console.groq.com)
+- A [Groq API key](https://console.groq.com)
 
 ### Installation
 
