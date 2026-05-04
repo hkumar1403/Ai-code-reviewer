@@ -17,7 +17,6 @@ app.use(
 app.use(authRouter);
 app.use(projectRouter);
 
-connectDb();
 const PORT = process.env.PORT || 3000;
 
 if (!process.env.PORT) {
@@ -28,6 +27,12 @@ if (!process.env.JWT_SECRET) {
   console.log("JWT_SECRET not defined in .env");
 }
 
-app.listen(PORT, () => {
-  console.log(`Server started at http://localhost:${PORT}`);
-});
+const startServer = async () => {
+  await connectDb();
+
+  app.listen(PORT, () => {
+    console.log(`Server started at http://localhost:${PORT}`);
+  });
+};
+
+startServer();
