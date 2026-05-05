@@ -4,11 +4,13 @@ import { connectDb } from "./config/db.js";
 import authRouter from "./routes/auth.routes.js";
 import projectRouter from "./routes/project.routes.js";
 import cors from "cors";
+import { errorHandler } from "./middleware/error.middleware.js";
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
+app.use(errorHandler);
 app.use(
   cors({
     origin: "https://ai-code-reviewer-frontend-xi.vercel.app",
