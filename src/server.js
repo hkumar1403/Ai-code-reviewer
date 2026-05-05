@@ -10,7 +10,6 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
-app.use(errorHandler);
 app.use(
   cors({
     origin: "https://ai-code-reviewer-frontend-xi.vercel.app",
@@ -18,6 +17,7 @@ app.use(
 );
 app.use(authRouter);
 app.use(projectRouter);
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 
