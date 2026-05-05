@@ -5,25 +5,31 @@ import authRouter from "./routes/auth.routes.js";
 import projectRouter from "./routes/project.routes.js";
 import cors from "cors";
 import { errorHandler } from "./middleware/error.middleware.js";
+import rateLimit from "express-rate-limit";
+import helmet from "helmet";
 
 dotenv.config();
 
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+});
 const app = express();
 app.use(express.json());
+app.use(helmet());
 app.use(
   cors({
-    origin: "https://ai-code-reviewer-frontend-xi.vercel.app",
+    origin: "http://localhost:5173",
+    // origin: "https://ai-code-reviewer-frontend-xi.vercel.app",
   }),
 );
+
+app.use(limiter);
 app.use(authRouter);
 app.use(projectRouter);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
-
-if (!process.env.PORT) {
-  console.log("PORT not defined in .env");
-}
 
 if (!process.env.JWT_SECRET) {
   console.log("JWT_SECRET not defined in .env");
