@@ -34,10 +34,15 @@ export const createProject = async (req, res) => {
   }
 };
 
+// Fetch all projects -->
 export const getProjects = async (req, res) => {
   try {
     const userId = req.user.id;
-    const projects = await Project.find({ user: userId });
+    const projects = await Project.find({ user: userId })
+      .sort({
+        createdAt: -1,
+      })
+      .limit(10);
 
     if (projects.length === 0) {
       return res.status(200).json({
@@ -51,6 +56,40 @@ export const getProjects = async (req, res) => {
       success: true,
       data: projects,
       message: "Here are all your projects",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      data: [],
+      message: "Server error. Please try later",
+    });
+  }
+};
+
+// Fetch only one project -->
+
+export const getProject = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    const project = await Project.findOne({
+      _id: id,
+      user: userId,
+    });
+    if (!project) {
+      return res.status(404).json({
+        success: false,
+        data: [],
+        message: "Project not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: project,
+      message: "Here is your project",
     });
   } catch (error) {
     console.error(error);

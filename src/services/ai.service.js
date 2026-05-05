@@ -17,26 +17,22 @@ export const generateReview = async (code) => {
         },
         {
           role: "user",
-          content: `Be concise, practical, and avoid generic advice.
+          content: `Return ONLY valid JSON. No explanation. No extra text.
 
-Rules:
-
-Focus on real issues only (no fluff)
-Prioritize critical bugs first
-Keep output short and structured
-Do not explain obvious things
-
-Output format:
+Format strictly:
 
 {
-  "critical": [],
-  "improvements": [],
-  "suggestions": []
+  "critical": ["string"],
+  "improvements": ["string"],
+  "suggestions": ["string"]
 }
 
-If no major issues, say: "No critical issues found."
+If no critical issues, return:
+"critical": ["No critical issues found"]
 
-Code:${code}`,
+Code:
+${code}
+`,
         },
       ],
       max_tokens: 1024,
