@@ -86,6 +86,13 @@ export const getProject = async (req, res) => {
       });
     }
 
+    if (project.user.toString() !== req.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+
     res.status(200).json({
       success: true,
       data: project,
@@ -97,6 +104,57 @@ export const getProject = async (req, res) => {
       success: false,
       data: [],
       message: "Server error. Please try later",
+    });
+  }
+};
+
+// Upload a project using multer -->
+
+export const uploadProject = async (req, res) => {
+  try {
+    const file = req.file;
+    if (!file) {
+      return res.status(400).json({
+        success: false,
+        message: "File required",
+      });
+    }
+
+    if (!file.mimetype.includes("javascript")) {
+      return res.status(400).json({
+        success: false,
+        message: "Only JS files allowed",
+      });
+    }
+
+    const code = file.buffer.toString();
+
+    let codeReview;
+    try {
+      codeReview = await generateReview(code);
+    } catch {
+      codeReview = {
+        bugs: [],
+        improvements: [],
+        summary: "AI failed to generate review",
+      };
+    }
+    const newProject = await Project.create({
+      user: req.user.id,
+      code,
+      review: codeReview,
+    });
+
+    res.status(201).json({
+      success: true,
+      data: newProject,
+      message: "File processed",
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
     });
   }
 };
