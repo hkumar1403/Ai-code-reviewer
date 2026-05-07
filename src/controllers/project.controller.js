@@ -4,7 +4,7 @@ import { generateReview } from "../services/ai.service.js";
 export const createProject = async (req, res) => {
   try {
     const { code } = req.body;
-    if (!code) {
+    if (!code.trim()) {
       return res.status(400).json({
         success: false,
         data: [],
@@ -37,12 +37,19 @@ export const createProject = async (req, res) => {
 // Fetch all projects -->
 export const getProjects = async (req, res) => {
   try {
-    const userId = req.user.id;
-    const projects = await Project.find({ user: userId })
-      .sort({
-        createdAt: -1,
-      })
-      .limit(10);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const projects = await Project.find({ user: req.user.id })
+      .select("code review createdAt user")
+      .populate("user", "username email")
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    const total = await Project.countDocuments({
+      user: req.user.id,
+    });
 
     if (projects.length === 0) {
       return res.status(200).json({
@@ -55,6 +62,11 @@ export const getProjects = async (req, res) => {
     res.status(200).json({
       success: true,
       data: projects,
+      pagination: {
+        total,
+        page,
+        pages: Math.ceil(total / limit),
+      },
       message: "Here are all your projects",
     });
   } catch (error) {
@@ -86,13 +98,6 @@ export const getProject = async (req, res) => {
       });
     }
 
-    if (project.user.toString() !== req.user.id) {
-      return res.status(403).json({
-        success: false,
-        message: "Unauthorized",
-      });
-    }
-
     res.status(200).json({
       success: true,
       data: project,
@@ -120,7 +125,11 @@ export const uploadProject = async (req, res) => {
       });
     }
 
-    if (!file.mimetype.includes("javascript")) {
+    const allowedExtensions = [".js", ".ts"];
+    const isValid = allowedExtensions.some((ext) =>
+      file.originalname.endsWith(ext),
+    );
+    if (!isValid) {
       return res.status(400).json({
         success: false,
         message: "Only JS files allowed",
